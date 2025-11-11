@@ -38,7 +38,7 @@
 
 ## ER Diagram
 
-![ER Diagram](file://C:\Users\djoan\Desktop\ENIGMA SOFTWARE\Sugar Free POS\Docs\img\ER_Diagram.png?msec=1762824562754)
+![ER Diagram](./img/ER_Diagram.png)
 
 ---
 

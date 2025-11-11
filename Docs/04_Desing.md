@@ -14,7 +14,7 @@ The system follows a simple 3-layer architecture:
 
 ## Class Diagram
 
-![Class Diagram](C:\Users\djoan\Desktop\ENIGMA%20SOFTWARE\Sugar%20Free%20POS\Docs\img\Class_diagram.png)
+![Class Diagram](./img/Class_diagram.png)
 
 ---
 
