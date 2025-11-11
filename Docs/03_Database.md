@@ -1,14 +1,15 @@
 # Database Design
 
-## ER Diagram
-![ER Diagram](./img/ER_Diagram.png)
-
 ## Description
+
 - **Users**: stores user credentials, type of user and the permissions of functions in POS to user can do it.
 - **Inventory**: stores product information and stock.
 - **Sales**: store all the payment methods, transactions and cancellation of the sales.
 
+---
+
 ## Tables (Summary)
+
 | Group         | Table                    | Description                                              |
 | ------------- | ------------------------ | -------------------------------------------------------- |
 | **Users**     | `users`                  | Stores user credentials and personal info.               |
@@ -33,11 +34,19 @@
 |               | `payment_methods`        | Defines available payment methods.                       |
 |               | `payments_sales`         | Links sales with payment methods and amounts.            |
 
+---
+
+## ER Diagram
+
+![ER Diagram](file://C:\Users\djoan\Desktop\ENIGMA SOFTWARE\Sugar Free POS\Docs\img\ER_Diagram.png?msec=1762824562754)
+
+---
+
 ## ERD Source (dbdiagram.io JSON)
+
 The following code can be imported directly into [dbdiagram.io](https://dbdiagram.io) to visualize and edit the database model.
 
 ```json
-
 Table permissions {
   id int [pk, increment]
   permission varchar(50) [not null] // Example: Create users, Sales, Add products.
@@ -351,3 +360,4 @@ TableGroup sales {
   payment_methods
   payments_sales
 } 
+```
