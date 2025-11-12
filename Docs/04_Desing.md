@@ -4,6 +4,11 @@
 This document describes the architecture and design of Sugar Free POS.
 It includes class diagrams and sequence diagrams to explain how the system works. -->
 
+## Overview
+
+This document describes the architecture and design of Sugar Free POS.
+It includes class diagrams and sequence diagrams to explain how the system works.
+
 ## Architecture
 
 The system follows a simple 3-layer architecture:
@@ -20,8 +25,9 @@ The system follows a simple 3-layer architecture:
 
 ```mermaid
 ---
-title: Sugar free POS
+title: Sugar free POS Class Diagram
 ---
+
 classDiagram
 direction TB
     class User {
@@ -156,4 +162,34 @@ direction TB
     Product "*" --o "1" TaxType
     Entry "*" --o "1" EntryType
     Output "*" --o "1" OutputType
+```
+
+## Sequence diagrams
+
+### Login
+
+![Login Sequence Diagram](./img/Login_sequence_diagram.png)
+
+```mermaid
+---
+title: Login Sequence diagram
+---
+
+sequenceDiagram
+  actor User as User
+  participant POS as POS
+  participant DB as DB
+
+  User ->> POS: Inputs username and password
+  POS ->> DB: Validate credentials
+  alt Valid credentials
+    DB -->> POS: Credentials OK
+    POS -->> User: Displays welcome message
+  else Invalid credentials
+    DB -->> POS: Invalid credentials
+    POS -->> User: Displays error message
+    loop Retry login
+      User ->> POS: Re-enter username and password
+    end
+  end
 ```
