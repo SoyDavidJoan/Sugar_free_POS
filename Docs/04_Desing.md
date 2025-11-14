@@ -194,11 +194,15 @@ sequenceDiagram
   end
 ```
 
-### Sale
+### Sales
 
 ![Login Sequence Diagram](./img/Sale_sequence_diagram.png)
 
 ```mermaid
+---
+title: Sale Sequence diagram
+---
+
 sequenceDiagram
   actor User as User
   participant POS as POS
@@ -250,5 +254,93 @@ sequenceDiagram
       end  
   else Payment incomplete
     POS -->> User: Unable to continue
+  end
+```
+
+### Product Entries
+
+![Entry Sequence Diagram](./img/Entry_sequence_diagram.png)
+
+```mermaid
+---
+title: Product Entry Sequence diagram
+---
+sequenceDiagram
+  actor User as User
+  participant POS as POS
+  participant DB as DB
+  loop Scan Products
+    User ->> POS: Scan/select product + quantity
+    POS ->> DB: Validate product
+    alt Product available
+      DB -->> POS: Product ok
+      POS ->> POS: Add to entry detail
+    else Product not available
+      DB -->> POS: Not available
+      POS -->> User: Display error message
+    end
+  end
+  opt Review Entry
+    loop Remove items
+      User ->> POS: Remove item
+      POS ->> POS: Update entry detail
+    end
+  end
+  User ->> POS: Select entry type
+  User ->> POS: Confirm entry
+  POS ->> DB: Record entry and EntryDetail
+  POS ->> DB: Update product stock
+  critical Commit entry 
+    alt Commit Ok
+      DB ->> POS: Commit ok
+      POS ->> User: Display sucess message
+    else Commit error
+      DB ->> DB: Rollback
+      POS ->> User: Display error message
+    end
+  end
+```
+
+### Product Outputs
+
+![Outputs Sequence Diagram](./img/Output_sequence_diagram.png)
+
+```mermaid
+---
+title: Product Output Sequence diagram
+---
+sequenceDiagram
+  actor User as User
+  participant POS as POS
+  participant DB as DB
+  loop Scan Products
+    User ->> POS: Scan/select product + quantity
+    POS ->> DB: Validate product and stock
+    alt Product available
+      DB -->> POS: Product ok
+      POS ->> POS: Add to output detail
+    else Product not available
+      DB -->> POS: Not available
+      POS -->> User: Display error message
+    end
+  end
+  opt Review Output
+    loop Remove items
+      User ->> POS: Remove item
+      POS ->> POS: Update output detail
+    end
+  end
+  User ->> POS: Select output type
+  User ->> POS: Confirm output
+  POS ->> DB: Record output and OutputDetail
+  POS ->> DB: Reduce product stock
+  critical Commit Output 
+    alt Commit Ok
+      DB ->> POS: Commit ok
+      POS ->> User: Display success message
+    else Commit error
+      DB ->> DB: Rollback
+      POS ->> User: Display error message
+    end
   end
 ```
