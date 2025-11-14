@@ -193,3 +193,62 @@ sequenceDiagram
     end
   end
 ```
+
+### Sale
+
+![Login Sequence Diagram](./img/Sale_sequence_diagram.png)
+
+```mermaid
+sequenceDiagram
+  actor User as User
+  participant POS as POS
+  participant DB as DB
+  participant Printer as Printer
+
+  loop Scan Products
+    User ->> POS: Scan product
+    POS ->> DB: Validate product and stock
+    alt Product available
+      DB -->> POS: Product ok
+      POS ->> POS: Add to SaleDetail
+      POS ->> POS: Update sale subtotal, taxes and total
+    else Product not available
+      DB -->> POS: Not available
+      POS -->> User: Display error message
+    end
+  end
+
+  opt Review Sale
+    loop Remove items
+      User ->> POS: Remove item
+      POS ->> POS: Update SaleDetail
+      POS ->> POS: Recalculate subtotal, taxes and total
+    end
+  end
+
+  POS -->> User: Show total of sale
+  loop Add payments 
+    User ->> POS: Add payment method
+    POS ->> POS: Update total paid
+  end
+
+  alt Payment complete
+      POS ->> DB: Record sale and sale details
+      POS ->> DB: Record payments
+      POS ->> DB: Reduce stock for each sale detail
+
+      critical Commit sale
+        alt Commit OK
+            DB -->> POS: Commit OK
+            POS ->> Printer: Print ticket
+            POS -->> User: Show change
+        else Commit Error
+            DB ->> DB: Rollback
+            POS -->> User: Display error message
+        end
+
+      end  
+  else Payment incomplete
+    POS -->> User: Unable to continue
+  end
+```
