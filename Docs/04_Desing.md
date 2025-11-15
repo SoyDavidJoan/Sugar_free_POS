@@ -248,6 +248,7 @@ sequenceDiagram
             POS -->> User: Show change
         else Commit Error
             DB ->> DB: Rollback
+            DB -->> POS: Commit error
             POS -->> User: Display error message
         end
 
@@ -292,11 +293,12 @@ sequenceDiagram
   POS ->> DB: Update product stock
   critical Commit entry 
     alt Commit Ok
-      DB ->> POS: Commit ok
-      POS ->> User: Display sucess message
+      DB -->> POS: Commit ok
+      POS -->> User: Display sucess message
     else Commit error
       DB ->> DB: Rollback
-      POS ->> User: Display error message
+      DB -->> POS: Commit error
+      POS -->> User: Display error message
     end
   end
 ```
@@ -336,11 +338,64 @@ sequenceDiagram
   POS ->> DB: Reduce product stock
   critical Commit Output 
     alt Commit Ok
-      DB ->> POS: Commit ok
-      POS ->> User: Display success message
+      DB -->> POS: Commit ok
+      POS -->> User: Display success message
     else Commit error
       DB ->> DB: Rollback
-      POS ->> User: Display error message
+      DB -->> POS: Commit error
+      POS -->> User: Display error message
+    end
+  end
+```
+
+![Cancel sale sequence Diagram](./img/Cancel_sale_sequence_diagram.png)
+
+```mermaid
+---
+title: Cancel Sale Sequence diagram
+---
+sequenceDiagram
+  actor User as User
+  participant POS as POS
+  participant DB as DB
+  User ->> POS: Search for the sale
+  POS ->> DB: Validate user permission
+  alt User has permission
+    DB -->> POS: Permission granted
+    POS ->> DB: Fetch sale data
+  else User doesn't have permission
+    DB -->> POS: Deny permission
+    POS -->> User: Permission denied
+  end
+  alt Sale exists
+    DB -->> POS: Sale information
+    POS -->> User: Display sale information
+  else Sale doesn't exist
+    DB -->> POS: Sale not found
+    POS -->> User: Display error message
+  end
+  User ->> POS: Start cancellation
+  POS ->> DB: Validate sale eligibility
+  alt Sale eligible to cancel
+    DB -->> POS: Eligible to cancel
+    POS -->> User: Request cancellation reason
+  else Sale not eligible
+    DB -->> POS: Not eligible
+    POS -->> User: Display error message
+  end
+  User ->> POS: Confirm cancellation
+  POS ->> DB: Mark sale as canceled
+  POS ->> DB: Update stock for each sale detail
+  POS ->> DB: Register the cancellation record
+  critical Commit cancellation
+    alt Commit ok
+      DB -->> POS: Commit success
+      POS -->> User: Display success message
+      POS -->> User: Display refund amount to return to client
+    else Commit error
+      DB ->> DB: Rollback
+      DB -->> POS: Commit error
+      POS -->> User: Display error message
     end
   end
 ```
