@@ -231,9 +231,16 @@ sequenceDiagram
   end
 
   POS -->> User: Show total of sale
-  loop Add payments 
-    User ->> POS: Add payment method
-    POS ->> POS: Update total paid
+  POS ->> DB: Validate user permission
+  alt User has permission
+    DB -->> POS: Permission granted
+    loop Add payments 
+      User ->> POS: Add payment method
+      POS ->> POS: Update total paid
+    end
+  else User doesn't have permission
+    DB -->> POS: Deny permission
+    POS -->> User: Permission denied
   end
 
   alt Payment complete
@@ -270,6 +277,14 @@ sequenceDiagram
   actor User as User
   participant POS as POS
   participant DB as DB
+  POS ->> DB: Validate user permission
+  alt User has permission
+    DB -->> POS: Permission granted
+    POS -->> User: Allow access
+  else User doesn't have permission
+    DB -->> POS: Deny permission
+    POS -->> User: access denied
+  end
   loop Scan Products
     User ->> POS: Scan/select product + quantity
     POS ->> DB: Validate product
@@ -315,6 +330,14 @@ sequenceDiagram
   actor User as User
   participant POS as POS
   participant DB as DB
+  POS ->> DB: Validate user permission
+  alt User has permission
+    DB -->> POS: Permission granted
+    POS ->> User: Allow access
+  else User doesn't have permission
+    DB -->> POS: Deny permission
+    POS -->> User: access denied
+  end
   loop Scan Products
     User ->> POS: Scan/select product + quantity
     POS ->> DB: Validate product and stock
